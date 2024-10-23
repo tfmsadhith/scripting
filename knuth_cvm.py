@@ -36,7 +36,6 @@ def algorithm_d(stream, s):
         a = stream[t]
         u = uniform(0,1)
         buffer = list(filter(lambda x : x[1] != a, buffer)) 
-#        print(buffer, a)
         if u < p:
             if (len(buffer) < s):
                 buffer.append([u, a])
@@ -49,10 +48,41 @@ def algorithm_d(stream, s):
 
 print(sorted([[1.34,12], [2.123,3], [3,6]]))
 sum = 0
-runs = 1
+runs = 1000
 for i in range(0, runs):
-    sum += algorithm_d(A, 4)
+    sum += algorithm_d(A, 10)
 
 print(sum/runs)
 
-    
+
+# This is the algorithm that CVM originally published. Let's find
+# some flaws in it.
+def algorithm_x(stream, s):
+    m = len(stream)
+    t = -1
+    p = 1
+    buffer = []
+    while t < m - 1:
+        t += 1
+        a = stream[t]
+        u = uniform(0,1)
+        buffer = list(filter(lambda x : x != a, buffer)) 
+        if u < p:
+            buffer.append(a)
+        if len(buffer) == s:
+            buffer = list(filter(lambda x : uniform(0,1) >= 1/2, buffer))
+            p /= 2
+            if len(buffer) == s:
+                return "FAILED"
+        
+    return len(buffer)/p
+
+sum = 0
+runs = 30000
+for i in range(0, runs):
+    sum += algorithm_x(A, 4)
+
+print(sum/runs)
+
+# I can't see a difference between this and Knuth's algorithm for this
+# example at least.
